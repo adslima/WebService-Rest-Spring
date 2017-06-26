@@ -22,7 +22,7 @@ import com.algaworks.socialbooks.service.exceptions.LivroNaoEncontradoException;
 
 @RestController
 @RequestMapping(value = "/livros")
-public class LivrosResources {
+public class LivrosResource {
 
 	@Autowired
 	private LivrosService livrosService;
