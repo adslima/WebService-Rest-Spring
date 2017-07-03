@@ -1,6 +1,5 @@
 package com.algaworks.socialbooks.domain;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -11,21 +10,47 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.validator.constraints.NotEmpty;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+/**
+ * 
+ * @author ksa
+ *
+ */
 @Entity
 public class Comentarios {
 
+	/**
+	 * 
+	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-
+	/**
+	 * 
+	 */
+	@JsonInclude(Include.NON_NULL)
+	@NotEmpty(message = "Esse Campo não pode ser Vazio")
 	private String texto;
-
+	/**
+	 * 
+	 */
+	@JsonInclude(Include.NON_NULL)
 	private String usuario;
-
+	/**
+	 * 
+	 */
+	@JsonInclude(Include.NON_NULL)
+	@JsonFormat(pattern = "dd/MM/yyyy")
 	private Date data;
-	
+	/**
+	 * 
+	 */
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "LIVRO_ID")
 	@JsonIgnore

@@ -1,6 +1,6 @@
 package com.algaworks.socialbooks.domain;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -10,35 +10,44 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @Entity
 public class Livros {
 
-	@JsonInclude(Include.NON_NULL)
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@JsonInclude(Include.NON_NULL)
+	@NotEmpty(message = "Esse Campo deve ser preenchido")
 	private String nome;
 
 	@JsonInclude(Include.NON_NULL)
-	private LocalDateTime publicao;
+	@JsonFormat(pattern = "DD/MM/YYYY")
+	@NotNull(message = "Esse Campo é de preenchimento Obrigatorio")
+	private Date publicacao;
 
 	@JsonInclude(Include.NON_NULL)
+	@NotNull(message = "Esse Campo é de preenchimento Obrigatorio")
 	private String editora;
 
 	@JsonInclude(Include.NON_NULL)
+	@NotEmpty(message = "Esse Campo deve ser preenchido")
+	@Size(max = 1500, message = "O campo não pode conter mais de 1500 caracteres.")
 	private String resumo;
 
-	@JsonInclude(Include.NON_NULL)
+	@JsonInclude(Include.NON_EMPTY)
 	@OneToMany(mappedBy = "livros")
 	private List<Comentarios> comentarios;
 
-	
 	@ManyToOne
 	@JoinColumn(name = "AUTOR_ID")
 	@JsonInclude(Include.NON_NULL)
@@ -68,12 +77,12 @@ public class Livros {
 		this.nome = nome;
 	}
 
-	public LocalDateTime getPublicao() {
-		return publicao;
+	public Date getPublicacao() {
+		return publicacao;
 	}
 
-	public void setPublicao(LocalDateTime publicao) {
-		this.publicao = publicao;
+	public void setPublicacao(Date publicacao) {
+		this.publicacao = publicacao;
 	}
 
 	public String getEditora() {

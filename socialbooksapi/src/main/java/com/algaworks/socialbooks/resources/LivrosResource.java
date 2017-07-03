@@ -3,6 +3,8 @@ package com.algaworks.socialbooks.resources;
 import java.net.URI;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -27,13 +29,20 @@ public class LivrosResource {
 	@Autowired
 	private LivrosService livrosService;
 
-	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE,
+			MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_PDF_VALUE })
 	public ResponseEntity<List<Livros>> Listar() {
 		return ResponseEntity.status(HttpStatus.OK).body(this.livrosService.listar());
 	}
 
-	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Void> salvar(@RequestBody Livros livro) {
+	/**
+	 * 
+	 * @param livro
+	 * @return
+	 */
+	@RequestMapping(method = RequestMethod.POST, produces = { MediaType.APPLICATION_JSON_VALUE,
+			MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_PDF_VALUE })
+	public ResponseEntity<Void> salvar(@Valid @RequestBody Livros livro) {
 		livro = livrosService.salvar(livro);
 
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("{id}").buildAndExpand(livro.getId()).toUri();
@@ -42,26 +51,52 @@ public class LivrosResource {
 
 	}
 
-	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	/**
+	 * 
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE,
+			MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_PDF_VALUE })
 	public ResponseEntity<?> buscar(@PathVariable("id") Long id) {
 		Livros livros = livrosService.buscar(id);
 		return ResponseEntity.status(HttpStatus.OK).body(livros);
 	}
 
-	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
+	/**
+	 * 
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = { MediaType.APPLICATION_JSON_VALUE,
+			MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_PDF_VALUE })
 	public ResponseEntity<Void> deletar(@PathVariable("id") Long id) {
 		this.livrosService.deletar(id);
 		return ResponseEntity.noContent().build();
 	}
 
-	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+	/**
+	 * 
+	 * @param livros
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = { MediaType.APPLICATION_JSON_VALUE,
+			MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_PDF_VALUE })
 	public ResponseEntity<Void> atualizar(@RequestBody Livros livros, @PathVariable("id") Long id) {
 		livros.setId(id);
 		this.livrosService.atualizar(livros);
 		return ResponseEntity.noContent().build();
 	}
 
-	@RequestMapping(value = "/{id}/comentarios", method = RequestMethod.POST)
+	/**
+	 * 
+	 * @param livrosId
+	 * @param comentarios
+	 * @return
+	 */
+	@RequestMapping(value = "/{id}/comentarios", method = RequestMethod.POST, produces = {
+			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_PDF_VALUE })
 	public ResponseEntity<Void> adicionarComentario(@PathVariable("id") Long livrosId,
 			@RequestBody Comentarios comentarios) {
 		livrosService.salvarComentario(livrosId, comentarios);
@@ -70,9 +105,17 @@ public class LivrosResource {
 
 		return ResponseEntity.created(uri).build();
 	}
-	@RequestMapping(value = "/{id}/comentarios", method = RequestMethod.GET)
-	public ResponseEntity<List<Comentarios>> listaComentarios(@PathVariable("id") Long livrosId){
-		List<Comentarios>  comentarios = livrosService.listarComentarios(livrosId);
-		return ResponseEntity.status(HttpStatus.OK).body(comentarios);}
+
+	/**
+	 * 
+	 * @param livrosId
+	 * @return
+	 */
+	@RequestMapping(value = "/{id}/comentarios", method = RequestMethod.GET, produces = {
+			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_PDF_VALUE })
+	public ResponseEntity<List<Comentarios>> listaComentarios(@PathVariable("id") Long livrosId) {
+		List<Comentarios> comentarios = livrosService.listarComentarios(livrosId);
+		return ResponseEntity.status(HttpStatus.OK).body(comentarios);
+	}
 
 }
