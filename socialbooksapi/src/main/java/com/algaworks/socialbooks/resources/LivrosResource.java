@@ -2,13 +2,18 @@ package com.algaworks.socialbooks.resources;
 
 import java.net.URI;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.validation.Valid;
+import javax.ws.rs.core.SecurityContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -60,7 +65,10 @@ public class LivrosResource {
 			MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_PDF_VALUE })
 	public ResponseEntity<?> buscar(@PathVariable("id") Long id) {
 		Livros livros = livrosService.buscar(id);
-		return ResponseEntity.status(HttpStatus.OK).body(livros);
+		
+		CacheControl cacheControl = CacheControl.maxAge(20, TimeUnit.SECONDS);
+		
+		return ResponseEntity.status(HttpStatus.OK).cacheControl(cacheControl).body(livros);
 	}
 
 	/**
@@ -99,10 +107,16 @@ public class LivrosResource {
 			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_PDF_VALUE })
 	public ResponseEntity<Void> adicionarComentario(@PathVariable("id") Long livrosId,
 			@RequestBody Comentarios comentarios) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		comentarios.setUsuario(auth.getName());
+		
 		livrosService.salvarComentario(livrosId, comentarios);
 
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().build().toUri();
-
+		URI uri = ServletUriComponentsBuilder
+				.fromCurrentRequest().build()
+				.toUri();
+		
 		return ResponseEntity.created(uri).build();
 	}
 
